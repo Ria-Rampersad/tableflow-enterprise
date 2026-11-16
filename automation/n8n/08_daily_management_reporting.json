@@ -1,0 +1,233 @@
+{
+  "name": "TableFlow 08 - Daily management reporting",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1-6"
+            }
+          ]
+        }
+      },
+      "id": "6c4cc230-22de-5dec-9c08-b65189d2bedb",
+      "name": "Mon-Sat 07:00 SAST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9d1df83f-849c-57eb-aa42-f6c92e58f2f4",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/automation/daily-summary",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4f2e09ae-e0cb-54cc-84bf-8b82d5867f66",
+      "name": "Daily summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/incidents",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {},
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "open_only",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "20"
+            }
+          ]
+        }
+      },
+      "id": "effdee3f-f39c-57c3-bfcc-ae74c32454b5",
+      "name": "Open incidents",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const s = $('Daily summary').first().json;\nconst inc = $input.first().json;\nconst zar = n => 'R' + Number(n).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });\nconst top = (s.branches || []).sort((a, b) => b.revenue - a.revenue).slice(0, 3)\n  .map(b => `${b.name} ${zar(b.revenue)} (${b.orders} orders)`).join('; ');\nconst down = (s.integration_health.items || []).filter(i => i.status !== 'healthy').map(i => `${i.name}: ${i.status}`);\nconst text = [`*TableFlow daily report - ${s.business_date}*`,\n  `Sales ${zar(s.total_sales_zar)} from ${s.total_orders} orders (avg ${zar(s.average_order_value_zar)})`,\n  `Payments: ${s.payments.successful} ok / ${s.payments.failed} failed (${s.payments.success_rate}% success)`,\n  `Top branches: ${top || 'n/a'}`,\n  `Integrations needing attention: ${down.length ? down.join(', ') : 'none'}`,\n  `Open incidents: ${inc.total}`].join('\\n');\nreturn [{ json: { text } }];"
+      },
+      "id": "40393968-7637-5218-a648-2e0fdb274ff9",
+      "name": "Compose report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#management', text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "7ac8b4f7-330a-5861-ac89-a576537b6e6e",
+      "name": "Send to management channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Mon-Sat 07:00 SAST": {
+      "main": [
+        [
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "Daily summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily summary": {
+      "main": [
+        [
+          {
+            "node": "Open incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open incidents": {
+      "main": [
+        [
+          {
+            "node": "Compose report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose report": {
+      "main": [
+        [
+          {
+            "node": "Send to management channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "reporting"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

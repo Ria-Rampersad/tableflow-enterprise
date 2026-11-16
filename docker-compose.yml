@@ -1,0 +1,70 @@
+# TableFlow Enterprise - local stack.  docker compose up --build
+#   UI        http://localhost:8080      (nginx -> React; proxies /api to backend)
+#   API docs  http://localhost:8000/docs
+#   n8n       http://localhost:5678
+#   Postgres  localhost:5432
+name: tableflow
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tableflow}
+      POSTGRES_USER: ${POSTGRES_USER:-tableflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      TZ: Africa/Johannesburg
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tableflow} -d ${POSTGRES_DB:-tableflow}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: { context: ., dockerfile: devops/docker/backend.Dockerfile }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-tableflow}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-tableflow}
+      N8N_WEBHOOK_BASE_URL: http://n8n:5678/webhook
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+  frontend:
+    build: { context: ., dockerfile: devops/docker/frontend.Dockerfile }
+    ports: ["8080:8080"]
+    depends_on:
+      backend: { condition: service_healthy }
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:1.80.0
+    environment:
+      GENERIC_TIMEZONE: Africa/Johannesburg
+      TZ: Africa/Johannesburg
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"   # workflows read TABLEFLOW_* via $env
+      N8N_SECURE_COOKIE: "false"               # local http only - remove behind TLS
+      TABLEFLOW_API_URL: http://backend:8000
+      TABLEFLOW_CLIENT_ID: n8n-automation
+      TABLEFLOW_CLIENT_SECRET: ${N8N_CLIENT_SECRET:?set N8N_CLIENT_SECRET in .env}
+      ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-http://backend:8000/api/v1/alerts/sink}
+      ALERT_TOKEN: ${ALERT_SINK_TOKEN:?set ALERT_SINK_TOKEN in .env}
+    ports: ["5678:5678"]
+    volumes: [n8ndata:/home/node/.n8n]
+    depends_on: [backend]
+    restart: unless-stopped
+
+  # One-shot job: imports automation/n8n/*.json into n8n (workflows start inactive - activate in the UI).
+  n8n-import:
+    image: n8nio/n8n:1.80.0
+    entrypoint: ["n8n", "import:workflow", "--separate", "--input=/workflows"]
+    volumes: [n8ndata:/home/node/.n8n, ./automation/n8n:/workflows:ro]
+    depends_on: [n8n]
+    restart: "no"
+    profiles: ["setup"]
+
+volumes:
+  pgdata:
+  n8ndata:

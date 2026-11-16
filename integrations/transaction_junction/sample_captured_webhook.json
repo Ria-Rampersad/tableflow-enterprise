@@ -1,0 +1,11 @@
+{
+  "id": "evt_8c1f0b2d9e3a4f5b6c7d",
+  "type": "payment.captured",
+  "created": "2026-11-16T10:31:04+00:00",
+  "data": {
+    "transactionId": "TJ3D4D3FB413B0FD",
+    "amount": "161.70",
+    "currency": "ZAR",
+    "merchantRef": "TF-261116-ABC123"
+  }
+}

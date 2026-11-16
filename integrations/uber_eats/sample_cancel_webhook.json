@@ -1,0 +1,8 @@
+{
+  "event_id": "b7e1c3d2-0000-4000-8000-000000000001",
+  "event_type": "orders.cancel",
+  "meta": {
+    "resource_id": "5f3c2a1e-9b8d-4c7e-a1f2-0d9e8c7b6a51",
+    "reason": "Eater cancelled"
+  }
+}

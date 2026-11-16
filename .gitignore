@@ -1,0 +1,29 @@
+# secrets
+.env
+.env.*
+!.env.example
+keys/
+*.p8
+*.pem
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+# node
+node_modules/
+frontend/dist/
+# data / local artefacts
+*.duckdb
+*.duckdb.wal
+snowflake/etl/.watermarks.json
+snowflake/etl/extracts/
+*.log
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

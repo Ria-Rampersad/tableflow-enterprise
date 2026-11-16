@@ -1,0 +1,31 @@
+"""All ORM models are imported here so `Base.metadata` knows every table."""
+from app.models.core import (  # noqa: F401
+    ApiClient,
+    Branch,
+    Customer,
+    LoyaltyAccount,
+    LoyaltyTransaction,
+    Order,
+    OrderItem,
+    Payment,
+    Product,
+    Refund,
+    Role,
+    User,
+    utcnow,
+)
+from app.models.ops import (  # noqa: F401
+    AuditLog,
+    Incident,
+    IncidentEvent,
+    Integration,
+    IntegrationLog,
+    InventoryItem,
+    Notification,
+    PosTransaction,
+    ReconciliationRecord,
+    ReconciliationRun,
+    SettlementRecord,
+    WebhookEvent,
+    WebhookSubscription,
+)

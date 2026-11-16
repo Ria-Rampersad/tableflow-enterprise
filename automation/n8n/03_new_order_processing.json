@@ -1,0 +1,163 @@
+{
+  "name": "TableFlow 03 - New order processing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tableflow-new-order",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "f463ab61-dec3-5724-bc07-04d184d53a28",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "6f4ea688-7118-59dd-b4b2-f7cfa0b4e46f"
+    },
+    {
+      "parameters": {
+        "jsCode": "const o = $input.first().json.body ?? $input.first().json;\nconst total = Number(o.total || 0);\nconst digital = ['uber_eats', 'mr_d'].includes(o.channel);\nreturn [{ json: { ...o, total, large_digital: digital && total >= 1000,\n  text: `:package: Large ${o.channel} order ${o.order_number} at ${o.branch}: R${total.toFixed(2)} - check kitchen capacity` } }];"
+      },
+      "id": "d583fe71-9bf5-5d3e-98f9-08e008440aa4",
+      "name": "Classify order",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "dd1544e9-bb38-55ab-a5f8-85f149c216de",
+              "leftValue": "={{ $json.large_digital }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4564dfa0-1c4f-5574-a871-ee4fc277b25b",
+      "name": "Large digital order?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#branch-ops', text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "a6e0b99d-067f-59e7-ad03-9d5388e71195",
+      "name": "Alert branch channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        160
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "73ea729a-5be7-5959-965e-704884098ddb",
+      "name": "Normal order - no action",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        960,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Classify order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify order": {
+      "main": [
+        [
+          {
+            "node": "Large digital order?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Large digital order?": {
+      "main": [
+        [
+          {
+            "node": "Alert branch channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normal order - no action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "orders"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

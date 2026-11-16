@@ -1,0 +1,386 @@
+newman
+
+TableFlow Enterprise API
+
+❏ 00 Health & Auth
+↳ Liveness
+  GET http://localhost:8000/health [200 OK, 247B, 41ms]
+  ✓  status is 200
+
+↳ Readiness
+  GET http://localhost:8000/health/ready [200 OK, 720B, 40ms]
+  ✓  status is 200
+  ✓  db ok
+
+↳ Metrics
+  GET http://localhost:8000/metrics [200 OK, 406B, 3ms]
+  ✓  status is 200
+
+↳ Login - wrong password (negative)
+  POST http://localhost:8000/api/v1/auth/login [401 Unauthorized, 328B, 258ms]
+  ✓  status is 401
+
+↳ Login (OAuth2 password grant)
+  POST http://localhost:8000/api/v1/auth/login [200 OK, 525B, 239ms]
+  ✓  status is 200
+
+↳ Client credentials (n8n)
+  POST http://localhost:8000/api/v1/auth/token [200 OK, 575B, 293ms]
+  ✓  status is 200
+
+↳ Who am I
+  GET http://localhost:8000/api/v1/auth/me [200 OK, 282B, 10ms]
+  ✓  status is 200
+
+↳ Unauthenticated request (negative)
+  GET http://localhost:8000/api/v1/branches [401 Unauthorized, 318B, 12ms]
+  ✓  status is 401
+
+❏ 01 Branches
+↳ List branches
+  GET http://localhost:8000/api/v1/branches [200 OK, 4.44kB, 10ms]
+  ✓  status is 200
+
+↳ Create branch - invalid (negative)
+  POST http://localhost:8000/api/v1/branches [422 Unprocessable Content, 739B, 7ms]
+  ✓  status is 422
+
+↳ Create branch
+  POST http://localhost:8000/api/v1/branches [409 Conflict, 305B, 9ms]
+  ✓  status is [201, 409]
+
+↳ Assign POS / channels (PATCH)
+  PATCH http://localhost:8000/api/v1/branches/23 [200 OK, 501B, 12ms]
+  ✓  status is 200
+
+↳ Branch performance
+  GET http://localhost:8000/api/v1/branches/23/performance [200 OK, 8.18kB, 54ms]
+  ✓  status is 200
+
+↳ Branch integration health
+  GET http://localhost:8000/api/v1/branches/23/integration-health [200 OK, 822B, 24ms]
+  ✓  status is 200
+
+❏ 02 Digital ordering (partners)
+↳ Uber Eats - new order
+  POST http://localhost:8000/api/v1/partners/uber-eats/orders [202 Accepted, 326B, 42ms]
+  ✓  status is 202
+  ✓  not duplicate
+
+↳ Uber Eats - same order again (duplicate prevention)
+  POST http://localhost:8000/api/v1/partners/uber-eats/orders [202 Accepted, 338B, 18ms]
+  ✓  status is 202
+  ✓  duplicate
+
+↳ Uber Eats - missing API key (negative)
+  POST http://localhost:8000/api/v1/partners/uber-eats/orders [401 Unauthorized, 301B, 4ms]
+  ✓  status is 401
+
+↳ Mr D - new order
+  POST http://localhost:8000/api/v1/partners/mr-d/orders [202 Accepted, 326B, 20ms]
+  ✓  status is 202
+
+↳ Mr D - cancel order
+  POST http://localhost:8000/api/v1/partners/mr-d/orders/MRD-1794859953308/cancel [200 OK, 227B, 21ms]
+  ✓  status is 200
+
+❏ 03 Orders & POS
+↳ List orders (filters)
+  GET http://localhost:8000/api/v1/orders?channel=uber_eats&limit=10 [200 OK, 5.53kB, 17ms]
+  ✓  status is 200
+
+↳ Get order
+  GET http://localhost:8000/api/v1/orders/10624 [200 OK, 754B, 10ms]
+  ✓  status is 200
+
+↳ Create in-store order
+  POST http://localhost:8000/api/v1/orders [201 Created, 784B, 34ms]
+  ✓  status is 201
+  ✓  sent to POS
+
+↳ Create order - unknown SKU (negative)
+  POST http://localhost:8000/api/v1/orders [422 Unprocessable Content, 317B, 8ms]
+  ✓  status is 422
+
+↳ Update status -> preparing
+  PATCH http://localhost:8000/api/v1/orders/10626/status [200 OK, 701B, 18ms]
+  ✓  status is 200
+
+↳ Invalid transition (negative)
+  PATCH http://localhost:8000/api/v1/orders/10626/status [409 Conflict, 331B, 9ms]
+  ✓  status is 409
+
+↳ POS status
+  GET http://localhost:8000/api/v1/pos/status [200 OK, 8.76kB, 34ms]
+  ✓  status is 200
+
+↳ Menu sync
+  POST http://localhost:8000/api/v1/pos/branches/23/menu-sync [200 OK, 3.77kB, 14ms]
+  ✓  status is 200
+
+↳ Transaction sync
+  POST http://localhost:8000/api/v1/pos/branches/23/transaction-sync?business_date=2026-11-15 [200 OK, 207B, 20ms]
+  ✓  status is 200
+
+❏ 04 Payments
+↳ Create order for payment
+  POST http://localhost:8000/api/v1/orders [201 Created, 683B, 22ms]
+  ✓  status is 201
+
+↳ Initiate payment (idempotent)
+  POST http://localhost:8000/api/v1/payments [201 Created, 477B, 19ms]
+  ✓  status is 201
+
+↳ Replay same Idempotency-Key
+  POST http://localhost:8000/api/v1/payments [200 OK, 502B, 22ms]
+  ✓  status is 200
+
+↳ Get payment (captured by webhook)
+  GET http://localhost:8000/api/v1/payments/10541 [200 OK, 473B, 8ms]
+  ✓  status is 200
+
+↳ Partial refund
+  POST http://localhost:8000/api/v1/payments/10541/refunds [201 Created, 348B, 19ms]
+  ✓  status is 201
+
+↳ Over-refund (negative)
+  POST http://localhost:8000/api/v1/payments/10541/refunds [422 Unprocessable Content, 347B, 8ms]
+  ✓  status is 422
+
+↳ Create order (for decline test)
+  POST http://localhost:8000/api/v1/orders [201 Created, 686B, 107ms]
+  ✓  status is 201
+
+↳ Pay with declined token
+  POST http://localhost:8000/api/v1/payments [201 Created, 471B, 16ms]
+  ✓  status is 201
+
+↳ List failed payments
+  GET http://localhost:8000/api/v1/payments?status=failed&limit=5 [200 OK, 1.69kB, 14ms]
+  ✓  status is 200
+
+❏ 05 Webhooks
+↳ Inbound TJ webhook - bad signature (negative)
+  POST http://localhost:8000/api/v1/webhooks/inbound/transaction-junction [401 Unauthorized, 311B, 17ms]
+  ✓  status is 401
+
+↳ Simulate signed gateway callback
+  POST http://localhost:8000/api/v1/payments/10541/simulate-callback?event_type=payment.captured [200 OK, 347B, 15ms]
+  ✓  status is 200
+
+↳ Webhook events
+  GET http://localhost:8000/api/v1/webhooks/events?limit=10 [200 OK, 4.6kB, 9ms]
+  ✓  status is 200
+
+↳ Rejected events
+  GET http://localhost:8000/api/v1/webhooks/events?status=rejected [200 OK, 3.59kB, 8ms]
+  ✓  status is 200
+
+↳ List subscriptions
+  GET http://localhost:8000/api/v1/webhooks/subscriptions [200 OK, 1.44kB, 8ms]
+  ✓  status is 200
+
+↳ Register subscription
+  POST http://localhost:8000/api/v1/webhooks/subscriptions [201 Created, 325B, 9ms]
+  ✓  status is 201
+
+❏ 06 Loyalty
+↳ List accounts
+  GET http://localhost:8000/api/v1/loyalty/accounts?limit=5 [200 OK, 949B, 11ms]
+  ✓  status is 200
+
+↳ Account history
+  GET http://localhost:8000/api/v1/loyalty/accounts/17 [200 OK, 4.82kB, 12ms]
+  ✓  status is 200
+
+↳ Redeem points
+  POST http://localhost:8000/api/v1/loyalty/accounts/17/redeem [201 Created, 370B, 21ms]
+  ✓  status is [201, 422]
+
+↳ Failed syncs
+  GET http://localhost:8000/api/v1/loyalty/transactions?sync_status=failed [200 OK, 10.67kB, 12ms]
+  ✓  status is 200
+
+❏ 07 Integration monitoring
+↳ List integrations
+  GET http://localhost:8000/api/v1/integrations [200 OK, 3.04kB, 6ms]
+  ✓  status is 200
+
+↳ Simulate outage
+  PATCH http://localhost:8000/api/v1/integrations/8 [200 OK, 629B, 11ms]
+  ✓  status is 200
+
+↳ Health check (fails during outage)
+  POST http://localhost:8000/api/v1/integrations/8/health-check [200 OK, 308B, 9ms]
+  ✓  status is 200
+
+↳ End outage
+  PATCH http://localhost:8000/api/v1/integrations/8 [200 OK, 630B, 9ms]
+  ✓  status is 200
+
+↳ Integration logs
+  GET http://localhost:8000/api/v1/integrations/8/logs?limit=10 [200 OK, 10.61kB, 16ms]
+  ✓  status is 200
+
+↳ All failed calls
+  GET http://localhost:8000/api/v1/integrations/logs/failed?limit=10 [200 OK, 4.04kB, 12ms]
+  ✓  status is 200
+
+❏ 08 Incidents
+↳ Create incident
+  POST http://localhost:8000/api/v1/incidents [201 Created, 685B, 32ms]
+  ✓  status is 201
+
+↳ Investigate
+  PATCH http://localhost:8000/api/v1/incidents/14 [200 OK, 837B, 13ms]
+  ✓  status is 200
+
+↳ Add note
+  POST http://localhost:8000/api/v1/incidents/14/notes [200 OK, 975B, 12ms]
+  ✓  status is 200
+
+↳ Escalate
+  POST http://localhost:8000/api/v1/incidents/14/escalate [200 OK, 1.16kB, 14ms]
+  ✓  status is 200
+
+↳ Resolve without notes (negative)
+  PATCH http://localhost:8000/api/v1/incidents/14 [422 Unprocessable Content, 435B, 5ms]
+  ✓  status is 422
+
+↳ Resolve
+  PATCH http://localhost:8000/api/v1/incidents/14 [200 OK, 1.64kB, 17ms]
+  ✓  status is 200
+
+↳ Open incidents
+  GET http://localhost:8000/api/v1/incidents?open_only=true [200 OK, 3.78kB, 9ms]
+  ✓  status is 200
+
+↳ Resolution report
+  GET http://localhost:8000/api/v1/incidents/report [200 OK, 551B, 11ms]
+  ✓  status is 200
+
+❏ 09 Reconciliation & automation
+↳ Run reconciliation
+  POST http://localhost:8000/api/v1/reconciliation/runs [201 Created, 1.5kB, 55ms]
+  ✓  status is 201
+
+↳ Run detail
+  GET http://localhost:8000/api/v1/reconciliation/runs/5 [200 OK, 1.49kB, 8ms]
+  ✓  status is 200
+
+↳ Export CSV
+  GET http://localhost:8000/api/v1/reconciliation/runs/5/export [200 OK, 758B, 9ms]
+  ✓  status is 200
+
+↳ List runs
+  GET http://localhost:8000/api/v1/reconciliation/runs [200 OK, 1.57kB, 11ms]
+  ✓  status is 200
+
+↳ Daily summary
+  GET http://localhost:8000/api/v1/automation/daily-summary [200 OK, 4.12kB, 40ms]
+  ✓  status is 200
+
+↳ Discrepancy scan
+  POST http://localhost:8000/api/v1/automation/discrepancy-scan [200 OK, 12.53kB, 16ms]
+  ✓  status is 200
+
+↳ Integration health check (all)
+  POST http://localhost:8000/api/v1/automation/integration-health-check [200 OK, 914B, 23ms]
+  ✓  status is 200
+
+↳ Low stock
+  GET http://localhost:8000/api/v1/automation/low-stock [200 OK, 2.73kB, 13ms]
+  ✓  status is 200
+
+↳ Post finance journal
+  POST http://localhost:8000/api/v1/automation/finance-journal/23 [200 OK, 462B, 15ms]
+  ✓  status is 200
+
+↳ Notifications outbox
+  GET http://localhost:8000/api/v1/notifications?limit=10 [200 OK, 2.95kB, 14ms]
+  ✓  status is 200
+
+↳ Audit log
+  GET http://localhost:8000/api/v1/audit-logs?limit=10 [200 OK, 2.91kB, 11ms]
+  ✓  status is 200
+
+❏ 10 Dashboard & reports
+↳ Dashboard summary
+  GET http://localhost:8000/api/v1/dashboard/summary [200 OK, 1.33kB, 23ms]
+  ✓  status is 200
+
+↳ Revenue trend
+  GET http://localhost:8000/api/v1/dashboard/revenue-trend [200 OK, 3.72kB, 17ms]
+  ✓  status is 200
+
+↳ Branch performance
+  GET http://localhost:8000/api/v1/dashboard/branch-performance [200 OK, 2.93kB, 13ms]
+  ✓  status is 200
+
+↳ Daily transactions
+  GET http://localhost:8000/api/v1/dashboard/daily-transactions [200 OK, 3.36kB, 17ms]
+  ✓  status is 200
+
+↳ Report list
+  GET http://localhost:8000/api/v1/reports [200 OK, 340B, 7ms]
+  ✓  status is 200
+
+↳ Report: daily-sales
+  GET http://localhost:8000/api/v1/reports/daily-sales [200 OK, 3.75kB, 14ms]
+  ✓  status is 200
+
+↳ Report: monthly-sales
+  GET http://localhost:8000/api/v1/reports/monthly-sales [200 OK, 367B, 21ms]
+  ✓  status is 200
+
+↳ Report: branch-performance
+  GET http://localhost:8000/api/v1/reports/branch-performance [200 OK, 2.97kB, 17ms]
+  ✓  status is 200
+
+↳ Report: payment-success
+  GET http://localhost:8000/api/v1/reports/payment-success [200 OK, 1.48kB, 12ms]
+  ✓  status is 200
+
+↳ Report: order-volumes
+  GET http://localhost:8000/api/v1/reports/order-volumes [200 OK, 575B, 10ms]
+  ✓  status is 200
+
+↳ Report: failed-transactions
+  GET http://localhost:8000/api/v1/reports/failed-transactions [200 OK, 36.08kB, 11ms]
+  ✓  status is 200
+
+↳ Report: integration-performance
+  GET http://localhost:8000/api/v1/reports/integration-performance [200 OK, 1.2kB, 18ms]
+  ✓  status is 200
+
+↳ Report: loyalty-activity
+  GET http://localhost:8000/api/v1/reports/loyalty-activity [200 OK, 2.65kB, 13ms]
+  ✓  status is 200
+
+↳ Report: top-products
+  GET http://localhost:8000/api/v1/reports/top-products [200 OK, 1.02kB, 21ms]
+  ✓  status is 200
+
+↳ Report as CSV
+  GET http://localhost:8000/api/v1/reports/daily-sales?format=csv [200 OK, 1.89kB, 17ms]
+  ✓  status is 200
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                87 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                87 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 2 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │                91 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 3.4s                                       │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 183.66kB (approx)                         │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 25ms [min: 3ms, max: 293ms, s.d.: 47ms] │
+└────────────────────────────────────────────────────────────────┘

@@ -1,0 +1,133 @@
+# TableFlow Enterprise CI/CD
+# install -> lint -> automated tests (SQLite + PostgreSQL) -> build -> Docker images -> stack smoke test
+# No production deployment target is configured; the deploy job is a gated placeholder (see DevOps handbook).
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "feature/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend - lint & tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_DB: tableflow_test, POSTGRES_USER: tableflow, POSTGRES_PASSWORD: tableflow }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U tableflow" --health-interval 5s --health-timeout 3s --health-retries 20
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: backend/requirements-dev.txt }
+      - run: pip install -r requirements-dev.txt
+      - name: Lint (ruff)
+        run: ruff check app tests
+      - name: Unit/API/integration tests - SQLite
+        run: pytest --junitxml=reports/junit-sqlite.xml --cov=app --cov-report=xml:reports/coverage.xml --cov-report=term
+      - name: Same suite on PostgreSQL via real SQL migrations (+ schema-drift, triggers, views)
+        env: { TEST_DATABASE_URL: "postgresql+psycopg://tableflow:tableflow@localhost:5432/tableflow_test" }
+        run: pytest --junitxml=reports/junit-postgres.xml
+      - name: Regression subset
+        run: pytest -m regression -q
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: backend-test-reports, path: backend/reports }
+
+  frontend:
+    name: Frontend - lint, typecheck, tests, build
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with: { name: frontend-dist, path: frontend/dist }
+
+  api-contract:
+    name: Postman/Newman + n8n workflow runs against a live API
+    needs: backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_DB: tableflow, POSTGRES_USER: tableflow, POSTGRES_PASSWORD: tableflow }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U tableflow" --health-interval 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg://tableflow:tableflow@localhost:5432/tableflow
+      TABLEFLOW_API_URL: http://localhost:8000
+      TABLEFLOW_CLIENT_ID: n8n-automation
+      TABLEFLOW_CLIENT_SECRET: dev-n8n-secret-change-me
+      ALERT_WEBHOOK_URL: http://localhost:8000/api/v1/alerts/sink
+      ALERT_TOKEN: dev-alert-sink-token
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: pip install -r backend/requirements.txt
+      - name: Migrate, seed, start API
+        working-directory: backend
+        run: |
+          python -m app.migrate
+          python -m app.seed --days 14
+          nohup uvicorn app.main:app --port 8000 > ../api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:8000/health/ready && break; sleep 1; done
+      - name: Newman (Postman collection)
+        run: npx --yes newman@6 run postman/TableFlow_Enterprise.postman_collection.json -e postman/TableFlow_Local.postman_environment.json --reporters cli,junit --reporter-junit-export reports/newman.xml
+      - name: Execute all 8 n8n workflows with the local runner
+        run: bash scripts/run_n8n_workflows_locally.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: contract-reports, path: "reports\napi.log" }
+
+  docker:
+    name: Docker images + stack smoke test
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare CI env file
+        run: cp .env.example .env
+      - run: docker compose config --quiet
+      - run: docker compose build backend frontend
+      - name: Start stack
+        run: docker compose up -d postgres backend frontend
+      - name: Deployment checks (health, readiness, UI, login)
+        run: |
+          for i in $(seq 1 60); do curl -sf localhost:8080/health/ready && break; sleep 2; done
+          curl -sf localhost:8080/healthz
+          curl -sf localhost:8080/ | grep -q "TableFlow"
+          curl -sf -X POST localhost:8080/api/v1/auth/login -d "username=admin@tableflow.local&password=TableFlow!2026" | grep -q access_token
+      - if: failure()
+        run: docker compose logs --no-color
+      - run: docker compose down -v
+
+  deploy:
+    name: Deploy (placeholder - no target configured)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [docker, api-contract]
+    runs-on: ubuntu-latest
+    environment: production   # protect with required reviewers in GitHub settings
+    steps:
+      - run: |
+          echo "All quality gates passed for ${GITHUB_SHA}."
+          echo "No deployment target is configured for this portfolio project."
+          echo "A real pipeline would push images to a registry (e.g. GHCR) and roll out to staging, then production."

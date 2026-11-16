@@ -1,0 +1,79 @@
+
+Workflow: TableFlow 01 - Failed payment notification
+  - Webhook: in=0 out=[1]
+  - Format alert: in=1 out=[1]
+  - High value (>= R500)?: in=1 out=[1,0]
+  - Alert finance channel: in=1 out=[1]
+  - Get API token: in=1 out=[1]
+  - Raise incident: in=1 out=[1]
+{"workflow":"TableFlow 01 - Failed payment notification","ok":true,"nodes_run":6}
+
+Workflow: TableFlow 02 - Failed POS integration
+  - Webhook: in=0 out=[1]
+  - Get API token: in=1 out=[1]
+  - Get POS status: in=1 out=[1]
+  - Assess impact: in=1 out=[1]
+  - 3+ orders stuck?: in=1 out=[1,0]
+  - Raise POS incident: in=1 out=[1]
+  - Alert ops channel: in=1 out=[1]
+{"workflow":"TableFlow 02 - Failed POS integration","ok":true,"nodes_run":7}
+
+Workflow: TableFlow 03 - New order processing
+  - Webhook: in=0 out=[1]
+  - Classify order: in=1 out=[1]
+  - Large digital order?: in=1 out=[1,0]
+  - Alert branch channel: in=1 out=[1]
+{"workflow":"TableFlow 03 - New order processing","ok":true,"nodes_run":4}
+
+Workflow: TableFlow 04 - Loyalty point updates
+  - Webhook: in=0 out=[1]
+  - Sync failed?: in=1 out=[1,0]
+  - Get API token: in=1 out=[1]
+  - List failed syncs: in=1 out=[1]
+  - Split transactions: in=1 out=[20]
+  - Retry sync: in=20 out=[20]
+  - Summarise: in=20 out=[1]
+  - Alert CRM channel: in=1 out=[1]
+{"workflow":"TableFlow 04 - Loyalty point updates","ok":true,"nodes_run":8}
+
+Workflow: TableFlow 05 - Daily financial reconciliation
+  - Every day 06:00 SAST: in=0 out=[1]
+  - Get API token: in=1 out=[1]
+  - Run reconciliation: in=1 out=[1]
+  - Discrepancies found?: in=1 out=[1,0]
+  - Get run detail: in=1 out=[1]
+  - Build finance summary: in=1 out=[1]
+  - Alert finance channel: in=1 out=[1]
+{"workflow":"TableFlow 05 - Daily financial reconciliation","ok":true,"nodes_run":7}
+
+Workflow: TableFlow 06 - Low-stock notifications
+  - Every 3h during trading: in=0 out=[1]
+  - Get API token: in=1 out=[1]
+  - Get low stock: in=1 out=[1]
+  - Anything low?: in=1 out=[1,0]
+  - Group by branch: in=1 out=[9]
+  - Alert branch: in=9 out=[9]
+{"workflow":"TableFlow 06 - Low-stock notifications","ok":true,"nodes_run":6}
+
+Workflow: TableFlow 07 - Incident escalation
+  - Webhook: in=0 out=[1]
+  - Normalise: in=1 out=[1]
+  - SEV1?: in=1 out=[1,0]
+  - Page on-call engineer: in=1 out=[1]
+  - Post to incident channel: in=1 out=[1]
+  - New incident (not already escalated)?: in=1 out=[1,0]
+  - Wait 30 minutes: in=1 out=[1] (wait skipped by local runner)
+  - Get API token: in=1 out=[1]
+  - Get incident: in=1 out=[1]
+  - Still open?: in=1 out=[0,1]
+{"workflow":"TableFlow 07 - Incident escalation","ok":true,"nodes_run":10}
+
+Workflow: TableFlow 08 - Daily management reporting
+  - Mon-Sat 07:00 SAST: in=0 out=[1]
+  - Get API token: in=1 out=[1]
+  - Daily summary: in=1 out=[1]
+  - Open incidents: in=1 out=[1]
+  - Compose report: in=1 out=[1]
+  - Send to management channel: in=1 out=[1]
+{"workflow":"TableFlow 08 - Daily management reporting","ok":true,"nodes_run":6}
+all 8 workflows executed

@@ -1,0 +1,12 @@
+{
+  "locRef": "LOC101",
+  "orderNumber": "TF-261116-ABC123",
+  "items": [
+    {
+      "sku": "CHK-QTR",
+      "pos_item_ref": "1001",
+      "quantity": 2
+    }
+  ],
+  "total": "161.70"
+}

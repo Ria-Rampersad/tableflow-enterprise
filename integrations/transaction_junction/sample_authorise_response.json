@@ -1,0 +1,10 @@
+{
+  "transactionId": "TJ3D4D3FB413B0FD",
+  "responseCode": "00",
+  "responseText": "Approved",
+  "authCode": "13B0FD",
+  "amount": "161.70",
+  "currency": "ZAR",
+  "merchantRef": "TF-261116-ABC123",
+  "status": "AUTHORISED"
+}

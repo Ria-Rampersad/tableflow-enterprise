@@ -1,0 +1,24 @@
+{
+  "orderReference": "MRD-48213377",
+  "restaurant": {
+    "branchCode": "DBN-PNT"
+  },
+  "customer": {
+    "name": "Ayanda Zulu",
+    "mobile": "0731234567"
+  },
+  "lines": [
+    {
+      "productCode": "BRG-CLS",
+      "qty": 1,
+      "unitPrice": 74.9
+    },
+    {
+      "productCode": "SIDE-CHP",
+      "qty": 1,
+      "unitPrice": 29.9
+    }
+  ],
+  "orderTotal": 104.8,
+  "createdAt": "2026-11-16T12:31:00+02:00"
+}

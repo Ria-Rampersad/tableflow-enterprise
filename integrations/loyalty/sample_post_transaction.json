@@ -1,0 +1,15 @@
+{
+  "request": {
+    "member": "SF100001",
+    "type": "earn",
+    "points": 16,
+    "reference": "LT4521"
+  },
+  "response": {
+    "transactionRef": "LP8F2A01C3D4",
+    "member": "SF100001",
+    "type": "earn",
+    "points": 16,
+    "status": "POSTED"
+  }
+}

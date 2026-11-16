@@ -1,0 +1,6 @@
+{
+  "eventId": "c1d2e3f4-0000-4000-8000-000000000002",
+  "eventType": "ORDER_CANCELLED",
+  "orderReference": "MRD-48213377",
+  "reason": "Store closed"
+}

@@ -1,0 +1,256 @@
+{
+  "name": "TableFlow 01 - Failed payment notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tableflow-failed-payment",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "2aae39fa-5f40-5e5c-8ab1-27250dcb78cc",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "fa5a3fbc-1401-5658-9fab-d49e9eaf24b8"
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json.body ?? $input.first().json;\nconst amount = Number(p.amount || 0);\nreturn [{ json: { ...p, amount, high_value: amount >= 500,\n  text: `:x: Payment failed at ${p.branch ?? 'unknown branch'} - R${amount.toFixed(2)} (order ${p.order_number ?? '?'}): ${p.reason}` } }];"
+      },
+      "id": "1d751e9d-a80e-595b-9d90-ca90d34046b8",
+      "name": "Format alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "dcc886ff-1b0e-5e86-a461-22f1c1af2fa0",
+              "leftValue": "={{ $json.amount }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              },
+              "rightValue": 500
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f8141944-324d-55f6-820f-dcc3efa21a24",
+      "name": "High value (>= R500)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#finance-alerts', text: $('Format alert').item.json.text }) }}",
+        "options": {}
+      },
+      "id": "2f8449ea-7620-571a-be02-7e4278f215d4",
+      "name": "Alert finance channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9619abf0-4c84-5059-a106-791d3f17e07c",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/incidents",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ title: 'High-value payment failure ' + $('Format alert').item.json.order_number, severity: 'SEV3', category: 'payment', description: $('Format alert').item.json.text }) }}"
+      },
+      "id": "c071b36f-a0b4-55b8-a7da-94de86342edc",
+      "name": "Raise incident",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#ops-alerts', text: $('Format alert').item.json.text }) }}",
+        "options": {}
+      },
+      "id": "1ae5158b-2c4e-52ca-8e45-77217a28f509",
+      "name": "Alert ops channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        600
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Format alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format alert": {
+      "main": [
+        [
+          {
+            "node": "High value (>= R500)?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High value (>= R500)?": {
+      "main": [
+        [
+          {
+            "node": "Alert finance channel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert ops channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "Raise incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "payments"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

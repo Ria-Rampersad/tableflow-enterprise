@@ -1,0 +1,27 @@
+TableFlow ELT - mode: LOCAL DEMO (DuckDB - not Snowflake)
+[1/3] Extract from PostgreSQL
+  extracted branches                    13 rows -> snowflake/sample_data/branches.csv
+  extracted products                    24 rows -> snowflake/sample_data/products.csv
+  extracted orders                   10628 rows -> snowflake/sample_data/orders.csv
+  extracted order_items              22454 rows -> snowflake/sample_data/order_items.csv
+  extracted payments                 10542 rows -> snowflake/sample_data/payments.csv
+  extracted loyalty_transactions      4520 rows -> snowflake/sample_data/loyalty_transactions.csv
+  extracted integration_logs         21472 rows -> snowflake/sample_data/integration_logs.csv
+[2/3] Load + [3/3] Transform
+  ran 01_staging.sql (DuckDB)
+  ran 02_analytics_marts.sql (DuckDB)
+
+  Sample analytical query results (snowflake/queries/analytical_queries.sql):
+   - monthly_sales_by_province      15 rows  e.g. (datetime.datetime(2026, 9, 1, 0, 0), 'KwaZulu-Natal', Decimal('210168.10'), 970)
+   - branch_rank_last_7_days        12 rows  e.g. ('DBN-UML', 'Umhlanga Gateway', Decimal('31854.70'), 1)
+   - week_on_week_growth           120 rows  e.g. ('BFN-MIM', datetime.datetime(2026, 9, 14, 0, 0), Decimal('6107.30'), None, None)
+   - delivery_share_by_branch       12 rows  e.g. ('DBN-MSG', 41.4)
+   - decline_reasons                 4 rows  e.g. ('05', 222, Decimal('48040.00'))
+   - worst_payment_days             10 rows  e.g. (datetime.date(2026, 9, 21), 'JHB-SWT', 76.92, 3)
+   - peak_vs_offpeak_ticket          2 rows  e.g. (False, 228.75, 4850)
+   - top_products_by_category       15 rows  e.g. ('Burgers', 'Double Stack Burger', Decimal('129070.80'), 1)
+   - integration_reliability         7 rows  e.g. ('transaction_junction', 10516, 456, 95.664)
+   analytics.mart_daily_branch_sales        720 rows
+   analytics.fct_orders                   10628 rows
+   analytics.fct_payments                 10542 rows
+done

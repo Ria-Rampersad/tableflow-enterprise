@@ -1,0 +1,66 @@
+..................................sss................................... [ 70%]
+..............................                                           [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
+
+Name                                       Stmts   Miss  Cover
+--------------------------------------------------------------
+app/__init__.py                                0      0   100%
+app/api/__init__.py                            0      0   100%
+app/api/auth.py                               59      1    98%
+app/api/automation.py                         79     11    86%
+app/api/branches.py                           63      2    97%
+app/api/deps.py                               20      0   100%
+app/api/health.py                             31      2    94%
+app/api/incidents.py                          86      9    90%
+app/api/integrations.py                       99     20    80%
+app/api/loyalty.py                            52      2    96%
+app/api/orders.py                            109      9    92%
+app/api/payments.py                           70     18    74%
+app/api/reconciliation.py                     83      7    92%
+app/api/reports.py                            41      1    98%
+app/api/simulate.py                           63      5    92%
+app/api/webhooks.py                           66      5    92%
+app/config.py                                 46      0   100%
+app/database.py                               31      2    94%
+app/integrations/__init__.py                   0      0   100%
+app/integrations/backoffice.py                20      1    95%
+app/integrations/base.py                     105      3    97%
+app/integrations/loyalty.py                   17      2    88%
+app/integrations/micros_simphony.py           28      3    89%
+app/integrations/ordering.py                  33      2    94%
+app/integrations/transaction_junction.py      27      2    93%
+app/main.py                                   80      6    92%
+app/migrate.py                                43     43     0%
+app/models/__init__.py                         2      0   100%
+app/models/core.py                           165      0   100%
+app/models/ops.py                            187      0   100%
+app/monitoring/__init__.py                     0      0   100%
+app/monitoring/logging.py                     25      1    96%
+app/monitoring/metrics.py                     34      6    82%
+app/monitoring/ratelimit.py                   31      1    97%
+app/schemas/__init__.py                      306      1    99%
+app/security/__init__.py                       0      0   100%
+app/security/auth.py                          72      3    96%
+app/security/keypair.py                       36      0   100%
+app/security/signatures.py                    47      5    89%
+app/services/__init__.py                       0      0   100%
+app/services/audit.py                          8      0   100%
+app/services/automation.py                    64      4    94%
+app/services/incidents.py                     65      5    92%
+app/services/loyalty.py                       60      4    93%
+app/services/notifications.py                 37     18    51%
+app/services/orders.py                       141     12    91%
+app/services/payments.py                      67      5    93%
+app/services/pos.py                           44      5    89%
+app/services/reconciliation.py                84      1    99%
+app/services/reporting.py                    123      4    97%
+app/webhooks/__init__.py                       0      0   100%
+app/webhooks/processor.py                    107     22    79%
+--------------------------------------------------------------
+TOTAL                                       3056    253    92%
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_contracts.py:94: schema drift check needs PostgreSQL + migrations
+SKIPPED [1] tests/test_contracts.py:103: trigger exists only in PostgreSQL migration
+SKIPPED [1] tests/test_contracts.py:112: views exist only in PostgreSQL migration
+99 passed, 3 skipped in 9.52s

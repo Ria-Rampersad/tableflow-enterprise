@@ -1,0 +1,414 @@
+{
+  "name": "TableFlow 07 - Incident escalation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tableflow-incident-escalation",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "8102dc5b-a928-5779-a199-f32d1b46de94",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "ff54e1cd-7020-5404-96a6-6138ef0a60f8"
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = $input.first().json.body ?? $input.first().json;\nreturn [{ json: { ...e, text: `:rotating_light: ${e.severity} ${e.reference}: ${e.title}` +\n  (e.escalated_to ? ` - escalated to ${e.escalated_to}` : '') } }];"
+      },
+      "id": "c501e430-fd6b-56b9-9d6f-4769da010059",
+      "name": "Normalise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "279b1e36-1023-5026-aedd-1ab22611c66b",
+              "leftValue": "={{ $json.severity }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "SEV1"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fa82ab19-bf00-5048-8b5e-4e98bcbbeb90",
+      "name": "SEV1?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#on-call', text: 'PAGE: ' + $json.text }) }}",
+        "options": {}
+      },
+      "id": "cdc6cb5d-a911-5b98-92bb-589ab698ab79",
+      "name": "Page on-call engineer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#incidents', text: $('Normalise').item.json.text }) }}",
+        "options": {}
+      },
+      "id": "612e7ebe-6836-591f-8ce2-3e60d8acf400",
+      "name": "Post to incident channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "f2c31783-cd39-5a87-85b2-02ebd4c888ca",
+              "leftValue": "={{ $('Normalise').item.json.event_type }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "incident.created"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "df424187-7338-5e60-b702-bb3b415fdfc2",
+      "name": "New incident (not already escalated)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "minutes"
+      },
+      "id": "158dd718-7bbb-5dfe-8201-190bf9155053",
+      "name": "Wait 30 minutes",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        440
+      ],
+      "webhookId": "a9e4b496-3e47-5f23-ac4a-755d58ef38d5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fa27a418-7e05-590a-bdea-3008d5ec092a",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/incidents/{{ $('Normalise').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2496121-d2ef-576d-b100-4932802260b3",
+      "name": "Get incident",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "80076ca1-cdcb-5a53-9b15-3cd8088eabc9",
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "open"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c3ddde1f-1049-5ec8-8505-85f4dfee9a9a",
+      "name": "Still open?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/incidents/{{ $json.id }}/escalate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ reason: 'Auto-escalated by n8n: no acknowledgement within 30 minutes' }) }}"
+      },
+      "id": "2b8cd938-954b-511d-b905-b742f5ebcaeb",
+      "name": "Auto-escalate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        360
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalise": {
+      "main": [
+        [
+          {
+            "node": "SEV1?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEV1?": {
+      "main": [
+        [
+          {
+            "node": "Page on-call engineer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to incident channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post to incident channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to incident channel": {
+      "main": [
+        [
+          {
+            "node": "New incident (not already escalated)?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New incident (not already escalated)?": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 minutes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30 minutes": {
+      "main": [
+        [
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "Get incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get incident": {
+      "main": [
+        [
+          {
+            "node": "Still open?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Still open?": {
+      "main": [
+        [
+          {
+            "node": "Auto-escalate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "incidents"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

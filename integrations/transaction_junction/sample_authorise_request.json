@@ -1,0 +1,8 @@
+{
+  "order_id": 123,
+  "amount": "161.70",
+  "currency": "ZAR",
+  "method": "card",
+  "card_token": "tok_visa_approved",
+  "_header": "Idempotency-Key: pos-DBN-UML-000123-1"
+}

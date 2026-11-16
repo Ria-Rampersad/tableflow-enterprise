@@ -1,0 +1,30 @@
+
+ RUN  v2.1.9 /home/claude/tableflow-enterprise/frontend
+
+ ✓ src/tests/components.test.tsx > DataTable > renders rows and sorts when a header is clicked
+ ✓ src/tests/components.test.tsx > DataTable > calls onRowClick for drill-down and shows an empty state
+ ✓ src/tests/components.test.tsx > DataTable > paginates
+ ✓ src/tests/components.test.tsx > ui primitives > maps statuses to badge tones
+ ✓ src/tests/components.test.tsx > ui primitives > shows validation details and correlation id from API errors
+stderr | src/tests/components.test.tsx > Login page > validates input before calling the API
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/tests/components.test.tsx > Login page > validates input before calling the API
+ ✓ src/tests/components.test.tsx > Login page > logs in with the OAuth2 password flow and stores the session
+ ✓ src/tests/components.test.tsx > Login page > shows the API error on bad credentials
+ ✓ src/tests/components.test.tsx > Executive dashboard > renders KPIs from the dashboard API (frontend ↔ backend contract)
+ ✓ src/tests/units.test.ts > format utils (ZAR / en-ZA) > formats Rand
+ ✓ src/tests/units.test.ts > format utils (ZAR / en-ZA) > compacts large Rand amounts for chart axes
+ ✓ src/tests/units.test.ts > format utils (ZAR / en-ZA) > formats numbers, percentages, durations and labels
+ ✓ src/tests/units.test.ts > branch form validation > accepts a valid branch
+ ✓ src/tests/units.test.ts > branch form validation > rejects bad code, missing name and bad phone
+ ✓ src/tests/units.test.ts > api client > adds bearer token + request id and unwraps the error envelope
+ ✓ src/tests/units.test.ts > api client > clears the session and emits logout on 401
+ ✓ src/tests/units.test.ts > api client > builds query strings and skips empty values
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  20:12:40
+   Duration  2.04s (transform 186ms, setup 207ms, collect 414ms, tests 544ms, environment 523ms, prepare 101ms)
+

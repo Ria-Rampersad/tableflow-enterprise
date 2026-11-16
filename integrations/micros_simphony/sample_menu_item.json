@@ -1,0 +1,14 @@
+{
+  "menuItemId": "1001",
+  "name": {
+    "en-US": "Quarter Chicken & Chips"
+  },
+  "familyGroup": "Flame-Grilled Chicken",
+  "prices": [
+    {
+      "price": "69.90",
+      "priceSequence": 1
+    }
+  ],
+  "active": true
+}

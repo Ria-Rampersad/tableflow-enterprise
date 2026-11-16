@@ -1,0 +1,316 @@
+{
+  "name": "TableFlow 04 - Loyalty point updates",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tableflow-loyalty-update",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "9ef783c0-7ceb-519f-a414-ae29e36f94b7",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "722c3e61-5bb7-53db-83f6-545530c2b6db"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "62a45569-15ac-51aa-8d44-7c460395408a",
+              "leftValue": "={{ ($json.body ?? $json).event_type }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "loyalty.sync_failed"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4cca9445-7e55-52b6-aca6-5070a66e8aec",
+      "name": "Sync failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "552ed128-eb4c-5251-a793-02c684b46a0a",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/loyalty/transactions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {},
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "sync_status",
+              "value": "failed"
+            },
+            {
+              "name": "limit",
+              "value": "20"
+            }
+          ]
+        }
+      },
+      "id": "d48f6efb-69f6-5998-bb6a-89b652e315bc",
+      "name": "List failed syncs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($input.first().json.items || []).map(t => ({ json: { id: t.id } }));"
+      },
+      "id": "3a516736-6a16-5323-99ab-f4406aea36b0",
+      "name": "Split transactions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/loyalty/transactions/{{ $json.id }}/retry",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1177786b-b10b-5dea-8e86-58db61aadce3",
+      "name": "Retry sync",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        160
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all();\nconst ok = all.filter(i => i.json.sync_status === 'synced').length;\nreturn [{ json: { text: `:repeat: Loyalty retry: ${ok}/${all.length} transactions re-synced` } }];"
+      },
+      "id": "0d6cc5a9-3b2f-567f-8f6c-1d9e061c88bc",
+      "name": "Summarise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#crm', text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "9e9bdaf2-9f12-55a1-a9b8-cff4c54ef6d9",
+      "name": "Alert CRM channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        160
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "4bf97831-ce3d-525d-9fc5-0ecb11220ed6",
+      "name": "Points earned - no action",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        720,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Sync failed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync failed?": {
+      "main": [
+        [
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Points earned - no action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "List failed syncs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List failed syncs": {
+      "main": [
+        [
+          {
+            "node": "Split transactions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split transactions": {
+      "main": [
+        [
+          {
+            "node": "Retry sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry sync": {
+      "main": [
+        [
+          {
+            "node": "Summarise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarise": {
+      "main": [
+        [
+          {
+            "node": "Alert CRM channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "loyalty"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

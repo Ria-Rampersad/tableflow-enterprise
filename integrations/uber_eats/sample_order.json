@@ -1,0 +1,47 @@
+{
+  "id": "5f3c2a1e-9b8d-4c7e-a1f2-0d9e8c7b6a51",
+  "display_id": "A1B2C",
+  "store": {
+    "id": "uber-store-1",
+    "external_reference_id": "DBN-UML"
+  },
+  "eater": {
+    "first_name": "Thabo",
+    "last_name": "Nkosi",
+    "phone": "+27821234567"
+  },
+  "cart": {
+    "items": [
+      {
+        "external_data": "CHK-QTR",
+        "quantity": 2,
+        "price": {
+          "unit_price": {
+            "amount": 6990,
+            "currency_code": "ZAR"
+          }
+        }
+      },
+      {
+        "external_data": "DRK-CAN",
+        "quantity": 1,
+        "price": {
+          "unit_price": {
+            "amount": 2190,
+            "currency_code": "ZAR"
+          }
+        }
+      }
+    ],
+    "special_instructions": "Extra peri-peri"
+  },
+  "payment": {
+    "charges": {
+      "total": {
+        "amount": 16170,
+        "currency_code": "ZAR"
+      }
+    }
+  },
+  "placed_at": "2026-11-16T12:30:00+02:00"
+}

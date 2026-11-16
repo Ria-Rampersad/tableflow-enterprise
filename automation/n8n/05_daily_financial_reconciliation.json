@@ -1,0 +1,297 @@
+{
+  "name": "TableFlow 05 - Daily financial reconciliation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 6 * * *"
+            }
+          ]
+        }
+      },
+      "id": "10d678e3-a0cb-53b4-b9ba-7df2c0cf32f1",
+      "name": "Every day 06:00 SAST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c04a5dae-8cc2-5f28-96e9-f5e44bd2cbe1",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/automation/daily-reconciliation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c8984ce-36d1-5c8d-a071-0407c745d214",
+      "name": "Run reconciliation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "5dd2588c-3f17-5b23-b6f5-a2b880fc92f0",
+              "leftValue": "={{ $json.discrepancies }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "rightValue": 0
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c6985557-7a80-5bda-9809-08896b28e094",
+      "name": "Discrepancies found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/reconciliation/runs/{{ $json.run_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ce7aa56e-da3e-53e0-88a1-f7da2fce66c9",
+      "name": "Get run detail",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nconst lines = Object.entries(r.summary || {}).filter(([k]) => k !== 'matched').map(([k, v]) => `- ${k}: ${v}`);\nreturn [{ json: { text: `:bar_chart: Reconciliation ${r.business_date}: ${r.matched}/${r.total_orders} orders matched, ` +\n  `${r.discrepancies} discrepancies (R${r.discrepancy_value}).\\n${lines.join('\\n')}\\nRun #${r.id}` } }];"
+      },
+      "id": "559b79ec-8062-5f72-a857-e91c386a5833",
+      "name": "Build finance summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#finance', text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "11b40f9e-1c63-54b5-ab58-f29f940a1113",
+      "name": "Alert finance channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#finance', text: 'Reconciliation ' + $json.business_date + ': all orders matched' }) }}",
+        "options": {}
+      },
+      "id": "f9501d4f-3f97-536b-9cf9-658b521f3539",
+      "name": "Post clean result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Every day 06:00 SAST": {
+      "main": [
+        [
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "Run reconciliation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run reconciliation": {
+      "main": [
+        [
+          {
+            "node": "Discrepancies found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discrepancies found?": {
+      "main": [
+        [
+          {
+            "node": "Get run detail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post clean result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get run detail": {
+      "main": [
+        [
+          {
+            "node": "Build finance summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build finance summary": {
+      "main": [
+        [
+          {
+            "node": "Alert finance channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "finance"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

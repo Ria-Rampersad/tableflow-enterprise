@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="TableFlow Enterprise API" tests="87" time="2.260">
+  <testsuite name="00 Health &amp; Auth / Liveness" id="9331e987-bd86-466d-bd75-cbae07abf31d" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.041">
+    <testcase name="status is 200" time="0.041" classname="00HealthAmpAuthLiveness"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Readiness" id="01419319-1d33-4f79-bba3-be963e8cff6e" timestamp="2026-11-16T20:12:31.943Z" tests="2" failures="0" errors="0" time="0.040">
+    <testcase name="status is 200" time="0.040" classname="00HealthAmpAuthReadiness"/>
+    <testcase name="db ok" time="0.040" classname="00HealthAmpAuthReadiness"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Metrics" id="cbc62491-0e38-4972-a568-4e9ced0c5517" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.003">
+    <testcase name="status is 200" time="0.003" classname="00HealthAmpAuthMetrics"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Login - wrong password (negative)" id="8a2efa98-6e15-4697-a77f-431b468cb250" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.258">
+    <testcase name="status is 401" time="0.258" classname="00HealthAmpAuthLoginWrongPasswordNegative"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Login (OAuth2 password grant)" id="2a78978a-a7f7-4c4a-a7d6-81a533ab3d44" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.239">
+    <testcase name="status is 200" time="0.239" classname="00HealthAmpAuthLoginOAuth2PasswordGrant"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Client credentials (n8n)" id="9ce51d3d-01f1-4424-9a10-ac3c3b2ec208" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.293">
+    <testcase name="status is 200" time="0.293" classname="00HealthAmpAuthClientCredentialsN8N"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Who am I" id="b38602fb-51af-410c-844c-8e9a37baaba5" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status is 200" time="0.010" classname="00HealthAmpAuthWhoAmI"/>
+  </testsuite>
+  <testsuite name="00 Health &amp; Auth / Unauthenticated request (negative)" id="0b0a81d5-4d1c-47bc-b157-a7112250f87c" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 401" time="0.012" classname="00HealthAmpAuthUnauthenticatedRequestNegative"/>
+  </testsuite>
+  <testsuite name="01 Branches / List branches" id="d40f65e3-84a2-4b79-982d-fa36c79aef9d" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status is 200" time="0.010" classname="01BranchesListBranches"/>
+  </testsuite>
+  <testsuite name="01 Branches / Create branch - invalid (negative)" id="94e310e6-bd54-4e55-b331-728adf852bed" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status is 422" time="0.007" classname="01BranchesCreateBranchInvalidNegative"/>
+  </testsuite>
+  <testsuite name="01 Branches / Create branch" id="feb44446-5ee4-4887-b89b-a1808e52cac0" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is [201, 409]" time="0.009" classname="01BranchesCreateBranch"/>
+  </testsuite>
+  <testsuite name="01 Branches / Assign POS / channels (PATCH)" id="05648b16-b246-4406-9f92-92fdac60dd5c" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 200" time="0.012" classname="01BranchesAssignPosChannelsPatch"/>
+  </testsuite>
+  <testsuite name="01 Branches / Branch performance" id="7bc8371d-1349-4eee-9d19-421e2ab4e921" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.054">
+    <testcase name="status is 200" time="0.054" classname="01BranchesBranchPerformance"/>
+  </testsuite>
+  <testsuite name="01 Branches / Branch integration health" id="61f9d25b-75ed-43e4-8549-ebb5795ab9ec" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.024">
+    <testcase name="status is 200" time="0.024" classname="01BranchesBranchIntegrationHealth"/>
+  </testsuite>
+  <testsuite name="02 Digital ordering (partners) / Uber Eats - new order" id="444d9882-db8e-4530-b9de-1aebf7a4eecd" timestamp="2026-11-16T20:12:31.943Z" tests="2" failures="0" errors="0" time="0.042">
+    <testcase name="status is 202" time="0.042" classname="02DigitalOrderingPartnersUberEatsNewOrder"/>
+    <testcase name="not duplicate" time="0.042" classname="02DigitalOrderingPartnersUberEatsNewOrder"/>
+  </testsuite>
+  <testsuite name="02 Digital ordering (partners) / Uber Eats - same order again (duplicate prevention)" id="3deca06a-42e3-4ce9-b58f-4e8fa8e755bb" timestamp="2026-11-16T20:12:31.943Z" tests="2" failures="0" errors="0" time="0.018">
+    <testcase name="status is 202" time="0.018" classname="02DigitalOrderingPartnersUberEatsSameOrderAgainDuplicatePrevention"/>
+    <testcase name="duplicate" time="0.018" classname="02DigitalOrderingPartnersUberEatsSameOrderAgainDuplicatePrevention"/>
+  </testsuite>
+  <testsuite name="02 Digital ordering (partners) / Uber Eats - missing API key (negative)" id="73c1c5ce-e75a-40fa-b295-2317bf252c2f" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.004">
+    <testcase name="status is 401" time="0.004" classname="02DigitalOrderingPartnersUberEatsMissingApiKeyNegative"/>
+  </testsuite>
+  <testsuite name="02 Digital ordering (partners) / Mr D - new order" id="52e16e5e-084c-488d-8684-84f6b5f7a474" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.020">
+    <testcase name="status is 202" time="0.020" classname="02DigitalOrderingPartnersMrDNewOrder"/>
+  </testsuite>
+  <testsuite name="02 Digital ordering (partners) / Mr D - cancel order" id="8224ef8e-9426-43fd-8401-e9244331509a" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.021">
+    <testcase name="status is 200" time="0.021" classname="02DigitalOrderingPartnersMrDCancelOrder"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / List orders (filters)" id="b0e9401e-d612-4ae6-97f1-e1cbae94f251" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 200" time="0.017" classname="03OrdersAmpPosListOrdersFilters"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Get order" id="e9257379-88f6-4221-bdc8-e03ea44cdc77" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status is 200" time="0.010" classname="03OrdersAmpPosGetOrder"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Create in-store order" id="31426761-0116-423c-b1df-2ae09a4f92ef" timestamp="2026-11-16T20:12:31.943Z" tests="2" failures="0" errors="0" time="0.034">
+    <testcase name="status is 201" time="0.034" classname="03OrdersAmpPosCreateInStoreOrder"/>
+    <testcase name="sent to POS" time="0.034" classname="03OrdersAmpPosCreateInStoreOrder"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Create order - unknown SKU (negative)" id="06bda7b9-1d59-4ba6-93d2-5c601a817646" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status is 422" time="0.008" classname="03OrdersAmpPosCreateOrderUnknownSkuNegative"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Update status -> preparing" id="193c83d3-4ba3-4b65-884c-ed09547adcc5" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.018">
+    <testcase name="status is 200" time="0.018" classname="03OrdersAmpPosUpdateStatusPreparing"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Invalid transition (negative)" id="fdb3a4a5-1d97-4162-a37a-301f7a948da0" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 409" time="0.009" classname="03OrdersAmpPosInvalidTransitionNegative"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / POS status" id="2b8401f1-03ae-41c5-be88-c3ac5557f9cf" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.034">
+    <testcase name="status is 200" time="0.034" classname="03OrdersAmpPosPosStatus"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Menu sync" id="9527a975-f1c4-4285-bd98-0d13683ec67a" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="status is 200" time="0.014" classname="03OrdersAmpPosMenuSync"/>
+  </testsuite>
+  <testsuite name="03 Orders &amp; POS / Transaction sync" id="51bffff9-e4d4-4ba4-a8b0-0c00051be7d0" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.020">
+    <testcase name="status is 200" time="0.020" classname="03OrdersAmpPosTransactionSync"/>
+  </testsuite>
+  <testsuite name="04 Payments / Create order for payment" id="c974e3eb-88e2-499b-b416-ec196dd049e8" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="status is 201" time="0.022" classname="04PaymentsCreateOrderForPayment"/>
+  </testsuite>
+  <testsuite name="04 Payments / Initiate payment (idempotent)" id="08c5d3d6-5b71-4e39-955f-f6eef7bb12ba" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="status is 201" time="0.019" classname="04PaymentsInitiatePaymentIdempotent"/>
+  </testsuite>
+  <testsuite name="04 Payments / Replay same Idempotency-Key" id="34879c01-e984-419a-9fd9-4082f2d60b3e" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.022">
+    <testcase name="status is 200" time="0.022" classname="04PaymentsReplaySameIdempotencyKey"/>
+  </testsuite>
+  <testsuite name="04 Payments / Get payment (captured by webhook)" id="7d07d599-ab28-4d33-baa1-2e4979ad33f5" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status is 200" time="0.008" classname="04PaymentsGetPaymentCapturedByWebhook"/>
+  </testsuite>
+  <testsuite name="04 Payments / Partial refund" id="49eb0a9f-ada7-4297-a6dc-c035d699158b" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="status is 201" time="0.019" classname="04PaymentsPartialRefund"/>
+  </testsuite>
+  <testsuite name="04 Payments / Over-refund (negative)" id="2d99dc2d-7a15-4868-8c2b-afddf44519b2" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status is 422" time="0.008" classname="04PaymentsOverRefundNegative"/>
+  </testsuite>
+  <testsuite name="04 Payments / Create order (for decline test)" id="8bb9b143-4805-41cb-b0a5-23f9590605b5" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.107">
+    <testcase name="status is 201" time="0.107" classname="04PaymentsCreateOrderForDeclineTest"/>
+  </testsuite>
+  <testsuite name="04 Payments / Pay with declined token" id="45321fcb-ef52-4228-ab9a-aebc94660d40" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.016">
+    <testcase name="status is 201" time="0.016" classname="04PaymentsPayWithDeclinedToken"/>
+  </testsuite>
+  <testsuite name="04 Payments / List failed payments" id="e1983558-1631-4814-b87a-ce85fd70f5a3" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="status is 200" time="0.014" classname="04PaymentsListFailedPayments"/>
+  </testsuite>
+  <testsuite name="05 Webhooks / Inbound TJ webhook - bad signature (negative)" id="fa86e8f7-c196-4aac-97e0-a91fb38d74a1" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 401" time="0.017" classname="05WebhooksInboundTjWebhookBadSignatureNegative"/>
+  </testsuite>
+  <testsuite name="05 Webhooks / Simulate signed gateway callback" id="60295a2d-63f1-44ad-8c57-b849deca4a15" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.015">
+    <testcase name="status is 200" time="0.015" classname="05WebhooksSimulateSignedGatewayCallback"/>
+  </testsuite>
+  <testsuite name="05 Webhooks / Webhook events" id="e455b6f8-683b-4ffd-ac97-5a5ba502fedc" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 200" time="0.009" classname="05WebhooksWebhookEvents"/>
+  </testsuite>
+  <testsuite name="05 Webhooks / Rejected events" id="7af3ea32-aed6-4fac-84e7-52c588fc7212" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status is 200" time="0.008" classname="05WebhooksRejectedEvents"/>
+  </testsuite>
+  <testsuite name="05 Webhooks / List subscriptions" id="3230a970-5c97-4c63-b204-8ea4f53c6743" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status is 200" time="0.008" classname="05WebhooksListSubscriptions"/>
+  </testsuite>
+  <testsuite name="05 Webhooks / Register subscription" id="a9f09433-1a5d-49ea-89d5-81c4d7e7e8a7" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 201" time="0.009" classname="05WebhooksRegisterSubscription"/>
+  </testsuite>
+  <testsuite name="06 Loyalty / List accounts" id="097d0160-9079-4859-ab4f-32332f60dfbd" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status is 200" time="0.011" classname="06LoyaltyListAccounts"/>
+  </testsuite>
+  <testsuite name="06 Loyalty / Account history" id="397a7b20-a05c-438d-8c58-2a90cd7b91af" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 200" time="0.012" classname="06LoyaltyAccountHistory"/>
+  </testsuite>
+  <testsuite name="06 Loyalty / Redeem points" id="15437220-6b41-45a3-b50e-02c0eb7a5d30" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.021">
+    <testcase name="status is [201, 422]" time="0.021" classname="06LoyaltyRedeemPoints"/>
+  </testsuite>
+  <testsuite name="06 Loyalty / Failed syncs" id="af62e944-7e79-4daa-a442-5079858a58d1" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 200" time="0.012" classname="06LoyaltyFailedSyncs"/>
+  </testsuite>
+  <testsuite name="07 Integration monitoring / List integrations" id="d8d403b1-decd-4b37-b7fc-824e5b222984" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.006">
+    <testcase name="status is 200" time="0.006" classname="07IntegrationMonitoringListIntegrations"/>
+  </testsuite>
+  <testsuite name="07 Integration monitoring / Simulate outage" id="a1f2c2cf-6272-4a85-b803-e9fe73282fb6" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status is 200" time="0.011" classname="07IntegrationMonitoringSimulateOutage"/>
+  </testsuite>
+  <testsuite name="07 Integration monitoring / Health check (fails during outage)" id="ba95bc16-32eb-4ce8-a721-172b5140bdf2" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 200" time="0.009" classname="07IntegrationMonitoringHealthCheckFailsDuringOutage"/>
+  </testsuite>
+  <testsuite name="07 Integration monitoring / End outage" id="ebbf5fd2-7338-45b7-aa3b-f2e965509df1" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 200" time="0.009" classname="07IntegrationMonitoringEndOutage"/>
+  </testsuite>
+  <testsuite name="07 Integration monitoring / Integration logs" id="9b188432-30b4-4b0c-ba1b-d7dec890f69c" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.016">
+    <testcase name="status is 200" time="0.016" classname="07IntegrationMonitoringIntegrationLogs"/>
+  </testsuite>
+  <testsuite name="07 Integration monitoring / All failed calls" id="861ab525-6822-413c-9fe5-b746d3404754" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 200" time="0.012" classname="07IntegrationMonitoringAllFailedCalls"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Create incident" id="bbd7093a-972b-4654-8e83-1b710443183b" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.032">
+    <testcase name="status is 201" time="0.032" classname="08IncidentsCreateIncident"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Investigate" id="77de7d2c-08ba-46bf-8030-996dcbf24e29" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="status is 200" time="0.013" classname="08IncidentsInvestigate"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Add note" id="c9b07799-bae7-480b-8178-c3f88a016178" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 200" time="0.012" classname="08IncidentsAddNote"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Escalate" id="a5ebdaac-5e15-4f4a-b6d8-b4cb5e656475" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="status is 200" time="0.014" classname="08IncidentsEscalate"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Resolve without notes (negative)" id="78ef549d-a3b5-4569-9242-56e5d86fb0df" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.005">
+    <testcase name="status is 422" time="0.005" classname="08IncidentsResolveWithoutNotesNegative"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Resolve" id="1d0c785e-4630-4281-9f82-4e0dc261039c" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 200" time="0.017" classname="08IncidentsResolve"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Open incidents" id="a7a666d2-a667-41fd-beaf-70714167d55d" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 200" time="0.009" classname="08IncidentsOpenIncidents"/>
+  </testsuite>
+  <testsuite name="08 Incidents / Resolution report" id="f61ea21f-4437-4e77-9669-bc866618cfd6" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status is 200" time="0.011" classname="08IncidentsResolutionReport"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Run reconciliation" id="eddc9ce7-e9bc-4062-a0d3-f57c0af49d77" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.055">
+    <testcase name="status is 201" time="0.055" classname="09ReconciliationAmpAutomationRunReconciliation"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Run detail" id="2f310f65-2b95-4ef8-b7c1-3508f8d7f679" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status is 200" time="0.008" classname="09ReconciliationAmpAutomationRunDetail"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Export CSV" id="865df3b9-7f5a-4388-974b-8be5f540601a" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status is 200" time="0.009" classname="09ReconciliationAmpAutomationExportCsv"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / List runs" id="010bd310-a0a3-4e43-a714-ae70e7e86021" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status is 200" time="0.011" classname="09ReconciliationAmpAutomationListRuns"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Daily summary" id="13af4e22-2538-4c8b-acea-78c1a576a7f2" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.040">
+    <testcase name="status is 200" time="0.040" classname="09ReconciliationAmpAutomationDailySummary"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Discrepancy scan" id="5dda92f5-6c0e-4c38-aa60-eb81c4543b8e" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.016">
+    <testcase name="status is 200" time="0.016" classname="09ReconciliationAmpAutomationDiscrepancyScan"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Integration health check (all)" id="d44a8102-8687-4788-8361-19fb6feff5df" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.023">
+    <testcase name="status is 200" time="0.023" classname="09ReconciliationAmpAutomationIntegrationHealthCheckAll"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Low stock" id="4628d96b-0491-495e-ad65-4161ba419054" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="status is 200" time="0.013" classname="09ReconciliationAmpAutomationLowStock"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Post finance journal" id="7b156249-5c55-4727-b7ab-123691a28322" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.015">
+    <testcase name="status is 200" time="0.015" classname="09ReconciliationAmpAutomationPostFinanceJournal"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Notifications outbox" id="bfc977f2-0b3f-40b8-9826-8b92f2d8c5a5" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="status is 200" time="0.014" classname="09ReconciliationAmpAutomationNotificationsOutbox"/>
+  </testsuite>
+  <testsuite name="09 Reconciliation &amp; automation / Audit log" id="ea6a36d5-8029-4503-866e-27c6c27b6197" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status is 200" time="0.011" classname="09ReconciliationAmpAutomationAuditLog"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Dashboard summary" id="dc6bd983-6087-4354-90fb-9233f2ba8b11" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.023">
+    <testcase name="status is 200" time="0.023" classname="10DashboardAmpReportsDashboardSummary"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Revenue trend" id="e9c2c269-ec64-47fd-8471-deed7c4702d6" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 200" time="0.017" classname="10DashboardAmpReportsRevenueTrend"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Branch performance" id="19a56deb-dc52-4b1d-bff7-b42f7173e1dd" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="status is 200" time="0.013" classname="10DashboardAmpReportsBranchPerformance"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Daily transactions" id="cfca37ca-bf5e-4b82-ba31-4df579bc2a55" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 200" time="0.017" classname="10DashboardAmpReportsDailyTransactions"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report list" id="c70eb4de-e277-46a9-84b9-3d14fe68909c" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status is 200" time="0.007" classname="10DashboardAmpReportsReportList"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: daily-sales" id="abe2478e-76bf-40fb-9cd8-3969c1c65179" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.014">
+    <testcase name="status is 200" time="0.014" classname="10DashboardAmpReportsReportDailySales"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: monthly-sales" id="f6ce0528-dd8b-4910-9fbd-74a1ff4f1ab6" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.021">
+    <testcase name="status is 200" time="0.021" classname="10DashboardAmpReportsReportMonthlySales"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: branch-performance" id="c2de3ac7-37d8-4fc2-9eb9-16c8343f6ccd" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 200" time="0.017" classname="10DashboardAmpReportsReportBranchPerformance"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: payment-success" id="1d93958b-ff82-4cc5-a642-4952ed4051a7" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status is 200" time="0.012" classname="10DashboardAmpReportsReportPaymentSuccess"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: order-volumes" id="df02686f-92da-4e26-bb63-2e6db9f4014e" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status is 200" time="0.010" classname="10DashboardAmpReportsReportOrderVolumes"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: failed-transactions" id="4deaca9f-0991-407a-8d6b-8afe8a6938b7" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status is 200" time="0.011" classname="10DashboardAmpReportsReportFailedTransactions"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: integration-performance" id="ca704986-15a9-4611-8259-b0c3a8b38076" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.018">
+    <testcase name="status is 200" time="0.018" classname="10DashboardAmpReportsReportIntegrationPerformance"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: loyalty-activity" id="69d12e2d-1b1e-4658-80dd-e02c0dcc296d" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="status is 200" time="0.013" classname="10DashboardAmpReportsReportLoyaltyActivity"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report: top-products" id="83761ccb-60dc-4771-a401-de50618293cf" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.021">
+    <testcase name="status is 200" time="0.021" classname="10DashboardAmpReportsReportTopProducts"/>
+  </testsuite>
+  <testsuite name="10 Dashboard &amp; reports / Report as CSV" id="f848fdda-45dc-4b0a-bd39-90331a856e72" timestamp="2026-11-16T20:12:31.943Z" tests="1" failures="0" errors="0" time="0.017">
+    <testcase name="status is 200" time="0.017" classname="10DashboardAmpReportsReportAsCsv"/>
+  </testsuite>
+</testsuites>

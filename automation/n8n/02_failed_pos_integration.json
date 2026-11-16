@@ -1,0 +1,264 @@
+{
+  "name": "TableFlow 02 - Failed POS integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tableflow-pos-failure",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "ea90526a-cb2e-507f-bc43-5d81d758e9f6",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "2e3793b6-56c5-572c-853d-0811d2aa50df"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9016b3cd-f28e-526f-b2e3-159b459ba181",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/pos/status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c15d353c-2c40-5a07-adf1-53e64bac4cad",
+      "name": "Get POS status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const evt = $('Webhook').first().json.body ?? $('Webhook').first().json;\nconst failed = $input.first().json.failed_orders || [];\nreturn [{ json: { failed_count: failed.length, branch: evt.branch, error: evt.error,\n  text: `:warning: Simphony POS failure (${evt.event_type}) at ${evt.branch}: ${evt.error}. ${failed.length} order(s) awaiting retry.` } }];"
+      },
+      "id": "d12b0ea4-ca92-5852-a29c-fd26c82dd1db",
+      "name": "Assess impact",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "674bf2f9-4630-5c2d-9bfc-32f36317d5cb",
+              "leftValue": "={{ $json.failed_count }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              },
+              "rightValue": 3
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "55270b6f-1396-54a2-a244-d1c761b371aa",
+      "name": "3+ orders stuck?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/incidents",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {},
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ title: 'POS forwarding failures at ' + $json.branch, severity: 'SEV2', category: 'pos', description: $json.text }) }}"
+      },
+      "id": "06059e15-8c48-5cb6-8d29-7916e6f72937",
+      "name": "Raise POS incident",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#ops-alerts', text: $('Assess impact').item.json.text }) }}",
+        "options": {}
+      },
+      "id": "3b7a4106-991b-5651-b1e2-ff2336eb1289",
+      "name": "Alert ops channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "Get POS status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get POS status": {
+      "main": [
+        [
+          {
+            "node": "Assess impact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assess impact": {
+      "main": [
+        [
+          {
+            "node": "3+ orders stuck?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3+ orders stuck?": {
+      "main": [
+        [
+          {
+            "node": "Raise POS incident",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert ops channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert ops channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "pos"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

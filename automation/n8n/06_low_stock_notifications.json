@@ -1,0 +1,246 @@
+{
+  "name": "TableFlow 06 - Low-stock notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9-20/3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "f7f4af84-da1a-59e3-b514-3549feb7db18",
+      "name": "Every 3h during trading",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/auth/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.TABLEFLOW_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.TABLEFLOW_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "264f9139-aab3-50c6-85af-d03fc7f92bc3",
+      "name": "Get API token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.TABLEFLOW_API_URL }}/api/v1/automation/low-stock",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get API token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "55a6e367-05d6-5399-91eb-dfd8ae23dbf9",
+      "name": "Get low stock",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cdcb6b2a-2f3e-5df6-8108-56e961d20f97",
+              "leftValue": "={{ $json.count }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "rightValue": 0
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c8fd8493-603f-5c6a-9f0e-5e38ff98e946",
+      "name": "Anything low?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.first().json.items;\nconst byBranch = {};\nfor (const i of items) (byBranch[i.branch] ??= []).push(`${i.item}: ${i.on_hand} ${i.unit} (re-order at ${i.reorder_level})`);\nreturn Object.entries(byBranch).map(([branch, lines]) => ({ json: { branch,\n  text: `:shopping_trolley: Low stock at ${branch}:\\n- ` + lines.join('\\n- ') } }));"
+      },
+      "id": "afb81621-995a-5c0b-aad4-98058004ac57",
+      "name": "Group by branch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ALERT_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Alert-Token",
+              "value": "={{ $env.ALERT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: '#procurement', text: $json.text }) }}",
+        "options": {}
+      },
+      "id": "7a795e61-5d0a-5f6f-af9c-b8d3b7d237c1",
+      "name": "Alert branch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        160
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a48d6f03-0433-59a4-8a61-129f3852d5aa",
+      "name": "Stock OK",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Every 3h during trading": {
+      "main": [
+        [
+          {
+            "node": "Get API token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get API token": {
+      "main": [
+        [
+          {
+            "node": "Get low stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get low stock": {
+      "main": [
+        [
+          {
+            "node": "Anything low?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anything low?": {
+      "main": [
+        [
+          {
+            "node": "Group by branch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stock OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Group by branch": {
+      "main": [
+        [
+          {
+            "node": "Alert branch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Johannesburg"
+  },
+  "tags": [
+    {
+      "name": "tableflow"
+    },
+    {
+      "name": "operations"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

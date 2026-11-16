@@ -1,0 +1,14 @@
+id,code,name,city,province,is_active,opened_on,_extracted_at
+13,DBN-UML,Umhlanga Gateway,Umhlanga,KwaZulu-Natal,True,2016-02-01,2026-11-16T20:12:42.568251+00:00
+14,DBN-MSG,Musgrave Centre,Durban,KwaZulu-Natal,True,2017-03-01,2026-11-16T20:12:42.568251+00:00
+15,DBN-PNT,Pinetown Pavilion,Pinetown,KwaZulu-Natal,True,2018-04-01,2026-11-16T20:12:42.568251+00:00
+16,PMB-LBT,Liberty Midlands,Pietermaritzburg,KwaZulu-Natal,True,2019-05-01,2026-11-16T20:12:42.568251+00:00
+17,BLT-LFS,Ballito Lifestyle,Ballito,KwaZulu-Natal,True,2020-06-01,2026-11-16T20:12:42.568251+00:00
+18,JHB-RSB,Rosebank Mall,Johannesburg,Gauteng,True,2021-07-01,2026-11-16T20:12:42.568251+00:00
+19,JHB-SDN,Sandton City,Sandton,Gauteng,True,2022-08-01,2026-11-16T20:12:42.568251+00:00
+20,JHB-SWT,Maponya Mall,Soweto,Gauteng,True,2023-09-01,2026-11-16T20:12:42.568251+00:00
+21,PTA-MNL,Menlyn Maine,Pretoria,Gauteng,True,2015-10-01,2026-11-16T20:12:42.568251+00:00
+22,CPT-CNW,Canal Walk,Cape Town,Western Cape,True,2016-11-01,2026-11-16T20:12:42.568251+00:00
+23,GQB-BWK,Boardwalk,Gqeberha,Eastern Cape,True,2017-12-01,2026-11-16T20:12:42.568251+00:00
+24,BFN-MIM,Mimosa Mall,Bloemfontein,Free State,True,2018-01-01,2026-11-16T20:12:42.568251+00:00
+25,DBN-WTF,Westwood Mall,Westville,KwaZulu-Natal,True,,2026-11-16T20:12:42.568251+00:00
