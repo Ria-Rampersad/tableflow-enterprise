@@ -6,7 +6,7 @@ n8n (`:5678`) or a terminal for the local runner, VS Code on the repo; zoom 110%
 
 | Time | Show on screen | Say |
 |---|---|---|
-| 0:00 | README / architecture diagram | "TableFlow Enterprise is a portfolio project I designed and built end to end to practise the Solutions Engineer role: connecting POS, delivery, payments, loyalty and back-office systems for a fictional 12-branch restaurant group. Vendor integrations are simulated — I'll show exactly where." |
+| 0:00 | README / architecture diagram | "I'm Ria Rampersad. TableFlow Enterprise is a portfolio project I designed and built end to end to practise the Solutions Engineer role: connecting POS, delivery, payments, loyalty and back-office systems for a fictional 12-branch restaurant group. Vendor integrations are simulated — I'll show exactly where." |
 
 ## 1. Business problem (2 min)
 Show `requirements/01_…` pain table. Say: "Finance reconciled in Excel days later, delivery orders were re-keyed,

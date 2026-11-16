@@ -2,6 +2,7 @@
   "name": "tableflow-frontend",
   "private": true,
   "version": "1.0.0",
+  "author": "Ria Rampersad",
   "type": "module",
   "scripts": {
     "dev": "vite",

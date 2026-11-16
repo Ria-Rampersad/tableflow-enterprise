@@ -169,7 +169,7 @@ def seed(days: int = 60) -> dict:
         db.add_all(products)
         db.flush()
         users = [
-            User(email="admin@tableflow.local", full_name="Adikar (Platform Admin)", password_hash=demo_pw,
+            User(email="admin@tableflow.local", full_name="Ria Rampersad (Platform Admin)", password_hash=demo_pw,
                  role_id=roles["admin"].id),
             User(email="finance@tableflow.local", full_name="Priya Govender (Finance)", password_hash=demo_pw,
                  role_id=roles["finance"].id),

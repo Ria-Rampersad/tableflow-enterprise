@@ -1,5 +1,7 @@
 # TableFlow Enterprise
 
+**Author:** Ria Rampersad · independent portfolio project (2026)
+
 **Restaurant operations, payments, integrations & automation platform** — an independent, end-to-end portfolio
 project built to demonstrate the Solutions Engineer role (requirements → design → build → integrate → test →
 deploy → support) for a South African restaurant business.

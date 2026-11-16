@@ -1,6 +1,6 @@
 # 10 · Personal Project Experience & Technical Decision Guide
 
-Use this to describe your contribution **accurately**. TableFlow is an independent portfolio project. Do not
+Prepared for **Ria Rampersad**. Use this to describe your contribution **accurately**. TableFlow is an independent portfolio project. Do not
 describe it as employment, team work, production traffic or a live vendor integration.
 
 ## Honest framing (use these sentences)
@@ -76,7 +76,7 @@ durable job queue; dual webhook secrets during rotation; dbt for the warehouse; 
 retention policy; running the Docker stack and GitHub Actions end to end.
 
 ## Sample interview answers
-**"Tell me about your project."** "I designed and developed TableFlow Enterprise as an independent end-to-end
+**"Tell me about your project."** "My name is Ria Rampersad. I designed and developed TableFlow Enterprise as an independent end-to-end
 portfolio project, aimed at the kind of work in this role. It connects simulated Simphony, a Transaction
 Junction-style gateway, Uber Eats, Mr D and a loyalty platform through a FastAPI backend with PostgreSQL, a React
 TypeScript dashboard and n8n workflows. The parts I'm proudest of are the integration layer — every vendor call goes

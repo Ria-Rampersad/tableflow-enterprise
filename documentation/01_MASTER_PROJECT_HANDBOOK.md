@@ -1,5 +1,7 @@
 # 01 · Master Project Handbook — TableFlow Enterprise
 
+**Author:** Ria Rampersad
+
 > Read this first. It explains the whole project in the order you would explain it to a technical interviewer.
 > Every claim here is backed by code in this repository; where something is simulated or not verified, it says so.
 
@@ -49,7 +51,7 @@ From the (fictional) stakeholder interviews in `requirements/01_…`:
 
 | Role (`roles.name`) | Demo login | Can do |
 |---|---|---|
-| `admin` | admin@tableflow.local | everything |
+| `admin` (Ria Rampersad) | admin@tableflow.local | everything |
 | `finance` | finance@tableflow.local | reconciliation, refunds, settlement import, finance journals, reports, audit |
 | `operations` | ops@tableflow.local | orders, payments, incidents, automation tools, branch edits |
 | `branch_manager` | manager.umhlanga@tableflow.local | own-branch orders/status/payments, loyalty redemption, incidents |
