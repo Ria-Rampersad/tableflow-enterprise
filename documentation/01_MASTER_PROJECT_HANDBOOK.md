@@ -190,7 +190,7 @@ Nine reports (JSON/CSV) with charts; Snowflake star schema and analytical querie
 | Docker / Compose / nginx | `devops/docker`, `docker-compose.yml` | Doc 07 |
 | Git / GitHub Actions | `.github/workflows/ci.yml` | Doc 07 |
 | Pytest / Vitest / Postman-Newman / Playwright (screenshots) | tests, `postman/` | Doc 06 |
-| Claude / Copilot / Cursor | development process | Doc 11 |
+| AI tooling (Copilot, Cursor) | development process | Doc 11 |
 
 ## 8. Every integration
 

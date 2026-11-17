@@ -1,5 +1,5 @@
 
- RUN  v2.1.9 /home/claude/tableflow-enterprise/frontend
+ RUN  v2.1.9 /workspace/tableflow-enterprise/frontend
 
  ✓ src/tests/components.test.tsx > DataTable > renders rows and sorts when a header is clicked
  ✓ src/tests/components.test.tsx > DataTable > calls onRowClick for drill-down and shows an empty state

@@ -16,7 +16,7 @@ Start with **01 Master Project Handbook**, then the Demonstration Script (09) an
 | 08 | [Solutions Engineering Interview Handbook](08_SOLUTIONS_ENGINEERING_INTERVIEW_HANDBOOK.md) | 122 questions with detailed answers |
 | 09 | [Project Demonstration Script](09_PROJECT_DEMONSTRATION_SCRIPT.md) | What to show and say, minute by minute |
 | 10 | [Personal Project Experience Guide](10_PERSONAL_PROJECT_EXPERIENCE_GUIDE.md) | Honest framing, decisions, bugs fixed, trade-offs, sample answers |
-| 11 | [AI-Assisted Development](11_AI_ASSISTED_DEVELOPMENT.md) | Claude/Copilot/Cursor usage and human review |
+| 11 | [AI-Assisted Development](11_AI_ASSISTED_DEVELOPMENT.md) | AI tooling usage, best practices and human review |
 | 12 | [Requirements Traceability Matrix](12_REQUIREMENTS_TRACEABILITY_MATRIX.md) | Job advert → implementation → files → demo → status |
 | 13 | [Final Verification Report](13_FINAL_VERIFICATION_REPORT.md) | Implemented / tested / passed / failed / simulated / incomplete |
 

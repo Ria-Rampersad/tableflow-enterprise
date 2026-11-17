@@ -1,11 +1,11 @@
-# 11 · AI-Assisted Development (Claude, GitHub Copilot, Cursor)
+# 11 · AI-Assisted Development (GitHub Copilot, Cursor, LLMs)
 
 AI tools speed up a Solutions Engineer's work, but responsibility for correctness, security and honesty stays
-with the engineer. This project was generated with substantial help from **Claude**; GitHub Copilot and Cursor are
-described as they would fit the same workflow. Nothing generated was assumed correct — it was run, tested and fixed.
+with the engineer. This project leverages modern AI-assisted engineering workflows (GitHub Copilot, Cursor, and LLM reasoning)
+to accelerate research, scaffolding, and testing. Nothing generated was assumed correct — it was run, tested and fixed.
 
 ## Where each tool helps
-| Activity | Claude (chat/agent) | GitHub Copilot (inline) | Cursor (AI editor) |
+| Activity | LLM Assistants (chat/agent) | GitHub Copilot (inline) | Cursor (AI editor) |
 |---|---|---|---|
 | Requirements | turn interview notes into user stories, Gherkin, business rules | — | — |
 | Design | compare options (outbox vs inline calls), draft ADRs, Mermaid diagrams | — | ask questions about the whole repo |

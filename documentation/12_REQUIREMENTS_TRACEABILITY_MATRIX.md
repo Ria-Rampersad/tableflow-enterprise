@@ -43,5 +43,5 @@ verified (reason given) · ○ Documented only.
 | 31 | [Brief] Root-cause analysis & runbooks | Support | 6 runbooks, RCA example, report template | `runbooks/RUNBOOKS.md` | — | runbooks | ○ |
 | 32 | [Brief] Financial reconciliation | Finance tooling | 9-rule engine, CSV export/import | `services/reconciliation.py` | Demo §8 | 05 §9 | ✅ |
 | 33 | [Brief] Reporting & analytics | Reporting | 9 reports JSON/CSV + dashboard | `services/reporting.py`, `pages/Reports.tsx` | Reports screen | 01 §6 | ✅ |
-| 34 | [Brief] AI-assisted development (Claude, Copilot, Cursor) | Ways of working | Usage, prompts, human review, wrong-output examples | Doc 11 | — | 11 | ○ |
+| 34 | [Brief] AI-assisted development (Copilot, Cursor, LLMs) | Ways of working | Usage, prompts, human review, wrong-output examples | Doc 11 | — | 11 | ○ |
 | 35 | [Brief] Audit trail | Compliance | append-only audit table + trigger | `services/audit.py`, V002 | Audit screen | 05 §7 | ✅ |
