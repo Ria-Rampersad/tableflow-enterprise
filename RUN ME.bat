@@ -1,13 +1,20 @@
 @echo off
 REM ===================================================================
-REM  TableFlow Enterprise - one-click local demo for Windows
+REM  TableFlow Enterprise - RUN ME (double-click to start)
 REM  Needs only Python 3.10+ (Anaconda is fine). Uses SQLite + the
 REM  pre-built React UI, all served on http://localhost:8000
-REM  First run: creates .venv, installs packages, seeds 60 days of data.
+REM  First run: creates a Python environment, installs packages, seeds 60 days of data.
 REM  Stop the app: close this window (or press Ctrl+C).
 REM ===================================================================
 setlocal
 cd /d "%~dp0backend"
+REM If TableFlow is already running, just open it instead of starting a second copy.
+netstat -ano | findstr /R /C:":8000 .*LISTENING" >nul 2>&1 && (
+  echo TableFlow is already running - opening http://localhost:8000
+  start http://localhost:8000
+  timeout /t 3 >nul
+  exit /b 0
+)
 title TableFlow Enterprise
 REM Virtual environment lives outside OneDrive so thousands of package files are not synced.
 set "VENV=%LOCALAPPDATA%\TableFlow\venv"
