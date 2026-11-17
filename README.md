@@ -22,6 +22,10 @@ deploy → support) for a South African restaurant business.
 | DevOps | Dockerfiles, Docker Compose (Postgres, API, UI, n8n), nginx, GitHub Actions CI/CD |
 | Docs | 13 handbooks incl. 122-question interview guide, demo script, runbooks, traceability matrix, verification report |
 
+## Quickest start on Windows (no Docker, no Node, no PostgreSQL)
+Double-click **`START_TABLEFLOW.bat`**. It uses your Python (3.10+, Anaconda works), installs packages into `backend/.venv`,
+seeds a SQLite demo database and serves the UI + API at http://localhost:8000. Close the window to stop.
+
 ## Quick start (Docker)
 ```bash
 cp .env.example .env              # change the CHANGE-… values

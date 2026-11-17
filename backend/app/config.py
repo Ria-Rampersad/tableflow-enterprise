@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     webhook_secret_uber_eats: str = "dev-uber-webhook-secret"
     webhook_secret_mr_d: str = "dev-mrd-webhook-secret"
     webhook_tolerance_seconds: int = 300
+    # Optional: path to the built React app (frontend/dist). When set, the API also serves the UI
+    # on the same port - used by the one-click Windows starter so Node.js is not required.
+    frontend_dist: str = ""
     cors_origins: str = "http://localhost:5173,http://localhost:3000,http://localhost:8080"
 
     # --- Rate limiting --------------------------------------------------

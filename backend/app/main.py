@@ -129,7 +129,29 @@ def create_app() -> FastAPI:
               integrations.router, integrations.pos_router, webhooks.router, incidents.router,
               reconciliation.router, reports.router, automation.router, automation.admin, simulate.router):
         app.include_router(r, prefix=api_prefix)
+    _mount_frontend(app, settings.frontend_dist)
     return app
+
+
+def _mount_frontend(app: FastAPI, dist: str) -> None:
+    """Serve the built SPA from the API process (single-port demo mode). Registered last so API routes win."""
+    from pathlib import Path
+
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    root = Path(dist) if dist else None
+    if not root or not (root / "index.html").exists():
+        return
+    if (root / "assets").is_dir():
+        app.mount("/assets", StaticFiles(directory=root / "assets"), name="assets")
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        candidate = (root / path).resolve()
+        if path and candidate.is_file() and root.resolve() in candidate.parents:
+            return FileResponse(candidate)
+        return FileResponse(root / "index.html")  # client-side routing
 
 
 app = create_app()
